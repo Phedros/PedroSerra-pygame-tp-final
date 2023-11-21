@@ -4,12 +4,13 @@ from constantes import *
 from auxiliar import Auxiliar
 
 class Player:
-    def __init__(self,x,y,speed_walk,speed_run,gravity,jump,animation_speed,contador) -> None:
+    def __init__(self,x,y,speed_walk,speed_run,gravity,jump,animation_speed) -> None:
         self.walk_r = Auxiliar.getSurfaceFromSpriteSheet("images/caracters/stink/walk.png",5,1)
         self.walk_l = Auxiliar.getSurfaceFromSpriteSheet("images/caracters/stink/walk.png",5,1,True)
-        self.stay = Auxiliar.getSurfaceFromSpriteSheet("images/caracters/stink/idle.png",1,1)
-        self.jump_r = Auxiliar.getSurfaceFromSpriteSheet("images/caracters/stink/jump.png",18,2,False)
-        self.jump_l = Auxiliar.getSurfaceFromSpriteSheet("images/caracters/stink/jump.png",18,2,True)
+        self.stay_r = Auxiliar.getSurfaceFromSpriteSheet("images/caracters/stink/idle.png",1,1)
+        self.stay_l = Auxiliar.getSurfaceFromSpriteSheet("images/caracters/stink/idle.png",1,1,True)
+        self.jump_r = Auxiliar.getSurfaceFromSpriteSheet("images/caracters/stink/jump.png",2,1,False)
+        self.jump_l = Auxiliar.getSurfaceFromSpriteSheet("images/caracters/stink/jump.png",2,1,True)
         self.frame = 0
         self.lives = 3
         self.score = 0
@@ -19,77 +20,88 @@ class Player:
         self.speed_run =  speed_run
         self.gravity = gravity
         self.jump = jump
-        self.animation = self.stay
+        self.animation = self.stay_r
         self.image = self.animation[self.frame]
         self.rect = self.image.get_rect()
         self.is_jump = False
         self.animation_speed = animation_speed
-        self.contador = contador
+        self.contador = 0
+        self.direccion = DIRECCION_R
+        self.tiempo_transcurrido_animation = 0
+        self.tiempo_transcurrido_move = 0
+        self.frame_rate_ms = 12
+        self.move_rate_ms = 12
 
-
-    def control(self,action,animation_speed):
-
-        if(action == "WALK_R"):
+    def walk_control(self,direccion,animation_speed):
+        self.direccion = direccion
+        if(direccion == DIRECCION_R):
             self.move_x = self.speed_walk
             self.animation = self.walk_r
             self.frame = 0
             self.animation_speed = animation_speed
             self.contador = 0
-        elif(action == "WALK_L"):
+        elif(direccion == DIRECCION_L):
             self.move_x = -self.speed_walk
             self.animation = self.walk_l
             self.frame = 0
             self.animation_speed = animation_speed
             self.contador = 0
-        elif(action == "JUMP_R"):
-            self.move_y = -self.jump
+
+    def jump_control(self,animation_speed):
+        self.move_y = -self.jump
+        if(self.direccion == DIRECCION_R):
             self.move_x = self.speed_walk
             self.animation = self.jump_r
-            self.frame = 0
-            self.is_jump = True
-            self.animation_speed = animation_speed
-            self.contador = 0
-
-        elif(action == "JUMP_L"):
-            self.move_y = -self.jump
+        elif(self.direccion == DIRECCION_L):
             self.move_x = -self.speed_walk
             self.animation = self.jump_l
-            self.frame = 0
-            self.is_jump = True
-            self.animation_speed = animation_speed
-            self.contador = 0
+        self.frame = 0
+        self.is_jump = True
+        self.animation_speed = animation_speed
+        self.contador = 0
 
-        elif(action == "STAY"):
-            self.animation = self.stay
-            self.move_x = 0
-            self.move_y = 0
-            self.frame = 0
-            self.animation_speed = animation_speed
-            self.contador = 0
-            
-    
+    def stay_control(self,animation_speed):
+        if(self.direccion == DIRECCION_R):
+            self.animation = self.stay_r
+        elif(self.direccion == DIRECCION_L):
+            self.animation = self.stay_l
+        self.move_x = 0
+        self.move_y = 0
+        self.frame = 0
+        self.animation_speed = animation_speed
+        self.contador = 0
 
-    def update(self):
-            
-        if(self.contador == self.animation_speed - 1):
-            if(self.frame < len(self.animation) - 1):
-                self.frame += 1 
-            else: 
-                self.frame = 0
-                if(self.is_jump == True):
-                    self.is_jump = False
-                    self.move_y = 0
-            self.contador = 0
-        else:
-            self.contador += 1
+    def do_movement(self,delta_ms):
+        self.tiempo_transcurrido_move += delta_ms
+        if(self.tiempo_transcurrido_move >= self.move_rate_ms):
+            self.tiempo_transcurrido = 0
+            self.rect.x += self.move_x
+            self.rect.y += self.move_y
 
+    def do_animation(self,delta_ms):
 
-        self.rect.x += self.move_x
-        self.rect.y += self.move_y
-        
+        self.tiempo_transcurrido_animation += delta_ms
+        if(self.tiempo_transcurrido_animation>= self.frame_rate_ms):
+            self.tiempo_transcurrido_animation = 0
+            if(self.contador == self.animation_speed - 1):
+                if(self.frame < len(self.animation) - 1):
+                    self.frame += 1 
+                else: 
+                    self.frame = 0
+                    if(self.is_jump == True):
+                        self.is_jump = False
+                        self.move_y = 0
+                self.contador = 0
+            else:
+                self.contador += 1
+
+    def update(self,delta_ms):
+        self.do_movement(delta_ms)
+        self.do_animation(delta_ms)
+
         if(self.rect.y < 550):
             self.rect.y += self.gravity
-    
+
     def draw(self,screen):
         self.image = self.animation[self.frame]
         screen.blit(self.image,self.rect)
