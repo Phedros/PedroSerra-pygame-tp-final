@@ -18,7 +18,7 @@ player_1 = Player(
     speed_walk=6,
     speed_run=8,
     gravity=8,
-    jump=20,
+    jump_power=20,
     animation_speed=1
     )
 
@@ -30,15 +30,22 @@ while True:
             sys.exit()
 
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_LEFT:
-                player_1.walk_control(DIRECCION_L,animation_speed=6)
-            if event.key == pygame.K_RIGHT:
-                player_1.walk_control(DIRECCION_R,animation_speed=6)
+            # if event.key == pygame.K_LEFT:
+            #     player_1.walk_control(DIRECCION_L,animation_speed=6)
+            # if event.key == pygame.K_RIGHT:
+            #     player_1.walk_control(DIRECCION_R,animation_speed=6)
             if event.key == pygame.K_SPACE:
-                player_1.jump_control(animation_speed=8)
+                player_1.jump_control(True,animation_speed=8)
+
         if event.type == pygame.KEYUP:
-            if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT or event.key == pygame.K_SPACE:
-                player_1.stay_control(animation_speed=1)
+            if event.key == pygame.K_SPACE:
+                player_1.jump_control(False,animation_speed=8)
+
+    keys = pygame.key.get_pressed()
+    if(keys[pygame.K_LEFT]):
+        player_1.walk_control(DIRECCION_L,animation_speed=6)
+    if(keys[pygame.K_RIGHT]):
+        player_1.walk_control(DIRECCION_R,animation_speed=6)
 
     screen.blit(imagen_fondo,imagen_fondo.get_rect()) #fundimos la imagen de fondo
 
