@@ -2,6 +2,8 @@ import pygame
 import sys
 from constantes import *
 from player import Player
+from plataforma import Platform
+from enemigo import *
 
 # Superficie principal
 screen = pygame.display.set_mode((ANCHO_VENTANA,ALTO_VENTANA))
@@ -14,13 +16,21 @@ imagen_fondo = pygame.image.load("images/locations/forest/Santuario_Abel.png")
 imagen_fondo = pygame.transform.scale(imagen_fondo,(ANCHO_VENTANA,ALTO_VENTANA)) # Escalamos la imagen de fondo a la dimension de la ventana
 player_1 = Player(
     x=0,
-    y=0,
-    speed_walk=6,
+    y=530,
+    speed_walk=10,
     speed_run=8,
     gravity=8,
-    jump_power=20,
-    animation_speed=1
+    jump_power=25,
+    max_high_jump = 450,      
+    animation_speed=12
     )
+
+
+
+lista_plataformas = []
+lista_plataformas.append(Platform(300,450,60,60))
+lista_plataformas.append(Platform(360,450,60,60))
+lista_plataformas.append(Platform(420,450,60,60))
 
 
 while True:
@@ -30,10 +40,6 @@ while True:
             sys.exit()
 
         if event.type == pygame.KEYDOWN:
-            # if event.key == pygame.K_LEFT:
-            #     player_1.walk_control(DIRECCION_L,animation_speed=6)
-            # if event.key == pygame.K_RIGHT:
-            #     player_1.walk_control(DIRECCION_R,animation_speed=6)
             if event.key == pygame.K_SPACE:
                 player_1.jump_control(True,animation_speed=8)
 
@@ -42,15 +48,25 @@ while True:
                 player_1.jump_control(False,animation_speed=8)
 
     keys = pygame.key.get_pressed()
-    if(keys[pygame.K_LEFT]):
+    if(keys[pygame.K_LEFT] and not keys[pygame.K_RIGHT]):
         player_1.walk_control(DIRECCION_L,animation_speed=6)
-    if(keys[pygame.K_RIGHT]):
+
+    if(not keys[pygame.K_LEFT] and keys[pygame.K_RIGHT]):
         player_1.walk_control(DIRECCION_R,animation_speed=6)
+
+    if(not keys[pygame.K_LEFT] and not keys[pygame.K_RIGHT]):
+        player_1.stay_control(animation_speed=12)
+
+    if(keys[pygame.K_LEFT] and keys[pygame.K_RIGHT]):
+        player_1.stay_control(animation_speed=12)
 
     screen.blit(imagen_fondo,imagen_fondo.get_rect()) #fundimos la imagen de fondo
 
+    for plataforma in lista_plataformas:
+        plataforma.draw(screen)
+
     delta_ms = clock.tick(FPS)  #limitando que vaya a una velocidad determinada
-    player_1.update(delta_ms)
+    player_1.update(delta_ms,lista_plataformas)
     player_1.draw(screen)
     
     # enemigos update
