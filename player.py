@@ -44,23 +44,31 @@ class Player:
         self.tiempo_transcurrido_move = 0
         self.frame_rate_ms = 12
         self.move_rate_ms = 12
+
+        self.is_running = False
         
 
         self.rect_down_colition = pygame.Rect(self.rect.x, self.rect.y + self.rect.h - ALTURA_RECT_CONTACTO, self.rect.h, ALTURA_RECT_CONTACTO)
         
 
-    def walk_control(self,direccion,animation_speed):
-        if(self.direccion != direccion or (self.animation != self.walk_l and self.animation != self.walk_r)):
+    def walk_control(self,direccion,animation_speed,is_running):
+        if(self.direccion != direccion or (self.animation != self.walk_l and self.animation != self.walk_r) or self.is_running != is_running):
             self.frame = 0
             self.direccion = direccion
+            if is_running:
+                self.is_running = True
+                speed = self.speed_run
+            else:
+                self.is_running = False
+                speed = self.speed_walk
             if(direccion == DIRECCION_R):
-                self.move_x = self.speed_walk
+                self.move_x = speed
                 if (self.is_jump) or not self.is_on_platform:
                     self.animation = self.jump_r
                 else:
                     self.animation = self.walk_r
             elif(direccion == DIRECCION_L):
-                self.move_x = -self.speed_walk
+                self.move_x = -speed
                 if (self.is_jump) or not self.is_on_platform:
                     self.animation = self.jump_l
                 else:

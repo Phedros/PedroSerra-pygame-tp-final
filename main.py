@@ -17,8 +17,8 @@ imagen_fondo = pygame.transform.scale(imagen_fondo,(ANCHO_VENTANA,ALTO_VENTANA))
 player_1 = Player(
     x=0,
     y=530,
-    speed_walk=10,
-    speed_run=8,
+    speed_walk=5,
+    speed_run=10,
     gravity=8,
     jump_power=25,
     max_high_jump = 450,      
@@ -52,26 +52,38 @@ while True:
 
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
-                player_1.jump_control(True,animation_speed=8)            
+                player_1.jump_control(True,animation_speed=8)   
+            # if event.key == pygame.K_LALT:
+            #     player_1.is_running = True 
+            #     player_1.walk_control(player_1.direccion,animation_speed=6,is_running=True)   
 
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_SPACE:
                 player_1.jump_control(False,animation_speed=8)
+            # if event.key == pygame.K_LALT:
+            #     player_1.is_running = False 
+
 
     keys = pygame.key.get_pressed()
     if(keys[pygame.K_LCTRL]):
         player_1.punch(animation_speed=2)
     else:
-        if(keys[pygame.K_LEFT] and not keys[pygame.K_RIGHT]):
-            player_1.walk_control(DIRECCION_L,animation_speed=6)
+        if(keys[pygame.K_LEFT] and not keys[pygame.K_RIGHT] and not keys[pygame.K_LALT]):
+            player_1.walk_control(DIRECCION_L,animation_speed=6,is_running=False)
+        
+        elif(keys[pygame.K_LEFT] and not keys[pygame.K_RIGHT] and keys[pygame.K_LALT]):
+            player_1.walk_control(DIRECCION_L,animation_speed=6,is_running=True)
 
-        if(not keys[pygame.K_LEFT] and keys[pygame.K_RIGHT]):
-            player_1.walk_control(DIRECCION_R,animation_speed=6)
+        elif(not keys[pygame.K_LEFT] and keys[pygame.K_RIGHT] and not keys[pygame.K_LALT]):
+            player_1.walk_control(DIRECCION_R,animation_speed=6,is_running=False)
 
-        if(not keys[pygame.K_LEFT] and not keys[pygame.K_RIGHT]):
+        elif(not keys[pygame.K_LEFT] and keys[pygame.K_RIGHT] and keys[pygame.K_LALT]):
+            player_1.walk_control(DIRECCION_R,animation_speed=6,is_running=True)
+
+        elif(not keys[pygame.K_LEFT] and not keys[pygame.K_RIGHT]):
             player_1.stay_control(animation_speed=12)
 
-        if(keys[pygame.K_LEFT] and keys[pygame.K_RIGHT]):
+        elif(keys[pygame.K_LEFT] and keys[pygame.K_RIGHT]):
             player_1.stay_control(animation_speed=12)
 
     screen.blit(imagen_fondo,imagen_fondo.get_rect()) #fundimos la imagen de fondo
