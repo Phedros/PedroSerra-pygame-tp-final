@@ -12,11 +12,22 @@ clock = pygame.time.Clock()
 tiempo = 0
 tiempo_mil = 0
 
+# define fonts
+font = pygame.font.SysFont("ITC Machine",40)
+
+def draw_text(text,font,text_col,x,y):
+    img = font.render(text,True,text_col)
+    screen.blit(img,(x,y))
+
+# Bullet
+bullet_group = pygame.sprite.Group()
+
 background_music = pg.mixer.Sound("sound\Saint Seiya Opening Version 8 BITS.mp3")
 background_music.play()
 
 imagen_fondo = pygame.image.load("images/locations/forest/Santuario_Abel.png")
 imagen_fondo = pygame.transform.scale(imagen_fondo,(ANCHO_VENTANA,ALTO_VENTANA)) # Escalamos la imagen de fondo a la dimension de la ventana
+
 player_1 = Player(
     x=0,
     y=530,
@@ -48,6 +59,9 @@ lista_plataformas.append(Platform(420,450,60,60))
 
 
 while True:
+
+    draw_text("Saint Seiya", font, YELLOW, ANCHO_VENTANA/2,80)
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
