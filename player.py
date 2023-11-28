@@ -15,7 +15,8 @@ class Player:
         self.punch_l = Auxiliar.getSurfaceFromSpriteSheet("images\caracters\stink\punch.png",1,3,True)
         self.jump_punch_r = Auxiliar.getSurfaceFromSpriteSheet("images\caracters\stink\jump_punch2.png",1,4)
         self.jump_punch_l = Auxiliar.getSurfaceFromSpriteSheet("images\caracters\stink\jump_punch2.png",1,4,True)
-
+        self.hit_r = Auxiliar.getSurfaceFromSpriteSheet("images\caracters\stink\hit.png",1,2,False)
+        self.hit_l = Auxiliar.getSurfaceFromSpriteSheet("images\caracters\stink\hit.png",1,2,True)
 
         self.speed_walk =  speed_walk
         self.speed_run =  speed_run
@@ -25,7 +26,7 @@ class Player:
         self.max_high_jump = max_high_jump
 
         self.frame = 0
-        self.lives = 3
+        self.lives = 5
         self.score = 0
         self.move_x = 0
         self.move_y = 0
@@ -46,10 +47,16 @@ class Player:
         self.move_rate_ms = 12
 
         self.is_running = False
+
+        self.is_hit = False
+        self.animation_flag = False
+        self.tiempo_transcurrido_hit = 0
+
+        self.is_punching = False
         
 
         self.rect_down_colition = pygame.Rect(self.rect.x, self.rect.y + self.rect.h - ALTURA_RECT_CONTACTO, self.rect.h, ALTURA_RECT_CONTACTO)
-        
+        self.rect_limit_colition = pygame.Rect((self.rect.x+self.rect.w/3), self.rect.y, self.rect.w/3, self.rect.h)        
 
     def walk_control(self,direccion,animation_speed,is_running):
         if(self.direccion != direccion or (self.animation != self.walk_l and self.animation != self.walk_r) or self.is_running != is_running):
@@ -127,6 +134,7 @@ class Player:
                 self.animation = self.jump_punch_r
             if self.direccion == DIRECCION_L:
                 self.animation = self.jump_punch_l
+        self.move_x = 0
         self.frame = 0
         self.animation_speed = animation_speed
 
@@ -135,7 +143,11 @@ class Player:
         # self.tiempo_transcurrido_move += delta_ms
         # if(self.tiempo_transcurrido_move >= self.move_rate_ms):
         #     self.tiempo_transcurrido_move = 0
-
+        if self.rect_limit_colition.x < 0 and self.move_x < 0:
+            self.move_x = 0
+        if (self.rect_limit_colition.x+self.rect_limit_colition.h/2) > ANCHO_VENTANA and self.move_x > 0:
+            self.move_x = 0
+        
         self.rect.x += self.move_x
         self.rect.y += self.move_y
 
@@ -145,13 +157,11 @@ class Player:
             self.jump_control(False,animation_speed=8)
 
         self.rect_down_colition = pygame.Rect(self.rect.x + (self.rect.w/2.5), self.rect.y + self.rect.h - ALTURA_RECT_CONTACTO, self.rect.w/4, ALTURA_RECT_CONTACTO)
+        self.rect_limit_colition = pygame.Rect((self.rect.x+self.rect.w/3), self.rect.y, self.rect.w/3, self.rect.h)
 
     def do_animation(self,delta_ms):
 
-        # self.tiempo_transcurrido_animation += delta_ms
-        # if(self.tiempo_transcurrido_animation>= self.frame_rate_ms):
-        #     self.tiempo_transcurrido_animation = 0
-        
+
         if(self.contador >= self.animation_speed):
             if(self.frame < len(self.animation) - 1):
                 self.frame += 1 
@@ -194,11 +204,30 @@ class Player:
     def draw(self,screen):
         if DEBUG:
             pygame.draw.rect(screen,ROJO,self.rect)
+            pygame.draw.rect(screen,YELLOW,self.rect_limit_colition)
             pygame.draw.rect(screen,VERDE,self.rect_down_colition)
         print(f'animacion: {self.animation}')
         print(f'frame: {self.frame}')
         self.image = self.animation[self.frame]
         screen.blit(self.image,self.rect)
         
+    def hit_animation(self,delta_ms,primer_hit):
+        self.tiempo_transcurrido_hit += delta_ms
+        if (self.animation != self.hit_l and self.animation != self.hit_r):
+            if(self.direccion == DIRECCION_R):
+                self.animation = self.hit_r
+            else:
+                self.animation = self.hit_l
+            self.frame = 0
+            self.animation_speed = 2
+            self.is_hit = True
+            if primer_hit:
+                self.lives -= 1
+            
+        if self.tiempo_transcurrido_hit > 500:
+            self.is_hit = False
+            self.tiempo_transcurrido_hit = 0
+
+
 
 

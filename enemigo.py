@@ -9,6 +9,8 @@ class Enemy:
         self.walk_l = Auxiliar.getSurfaceFromSpriteSheet("images\caracters\enemy\enemy_walk2.png",1,6,True)
         self.stay_r = Auxiliar.getSurfaceFromSpriteSheet("images\caracters\enemy\enemy_stay.png",1,1)
         self.stay_l = Auxiliar.getSurfaceFromSpriteSheet("images\caracters\enemy\enemy_stay.png",1,1,True)
+        self.hit_r = Auxiliar.getSurfaceFromSpriteSheet("images\caracters\enemy\enemy_hit.png",1,2)
+        self.hit_l = Auxiliar.getSurfaceFromSpriteSheet("images\caracters\enemy\enemy_hit.png",1,2,True)
 
         self.speed_walk = speed_walk
         self.speed_run = speed_run
@@ -40,6 +42,9 @@ class Enemy:
         self.ready = True
         self.bullet_time = 0
         self.laser_cooldown = 600
+
+        self.is_hit = False
+        self.tiempo_transcurrido_hit = 0
 
         self.bullet_group = pygame.sprite.Group()
 
@@ -154,3 +159,20 @@ class Enemy:
 
     def create_bullet(self):
         return Bullet(pos_x=self.rect.x , pos_y=self.rect.y , direction=self.direccion , img_path='images\caracters\enemy\star_atack.png')
+
+    def hit_animation(self,delta_ms,primer_hit):
+        self.tiempo_transcurrido_hit += delta_ms
+        if (self.animation != self.hit_l and self.animation != self.hit_r):
+            if(self.direccion == DIRECCION_R):
+                self.animation = self.hit_r
+            else:
+                self.animation = self.hit_l
+            self.frame = 0
+            self.animation_speed = 2
+            self.is_hit = True
+            if primer_hit:
+                self.lives -= 1
+            
+        if self.tiempo_transcurrido_hit > 500:
+            self.is_hit = False
+            self.tiempo_transcurrido_hit = 0
