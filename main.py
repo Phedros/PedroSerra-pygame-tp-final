@@ -25,6 +25,17 @@ player_1 = Player(
     animation_speed=12
     )
 
+enemigo_1 = Enemy(
+    x=200,
+    y=530,
+    speed_walk= 2,
+    speed_run=8,
+    gravity=8,
+    jump_power=25,
+    max_high_jump = 450,      
+    animation_speed=12
+)
+
 
 
 lista_plataformas = []
@@ -41,24 +52,27 @@ while True:
 
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
-                player_1.jump_control(True,animation_speed=8)
+                player_1.jump_control(True,animation_speed=8)            
 
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_SPACE:
                 player_1.jump_control(False,animation_speed=8)
 
     keys = pygame.key.get_pressed()
-    if(keys[pygame.K_LEFT] and not keys[pygame.K_RIGHT]):
-        player_1.walk_control(DIRECCION_L,animation_speed=6)
+    if(keys[pygame.K_LCTRL]):
+        player_1.punch(animation_speed=2)
+    else:
+        if(keys[pygame.K_LEFT] and not keys[pygame.K_RIGHT]):
+            player_1.walk_control(DIRECCION_L,animation_speed=6)
 
-    if(not keys[pygame.K_LEFT] and keys[pygame.K_RIGHT]):
-        player_1.walk_control(DIRECCION_R,animation_speed=6)
+        if(not keys[pygame.K_LEFT] and keys[pygame.K_RIGHT]):
+            player_1.walk_control(DIRECCION_R,animation_speed=6)
 
-    if(not keys[pygame.K_LEFT] and not keys[pygame.K_RIGHT]):
-        player_1.stay_control(animation_speed=12)
+        if(not keys[pygame.K_LEFT] and not keys[pygame.K_RIGHT]):
+            player_1.stay_control(animation_speed=12)
 
-    if(keys[pygame.K_LEFT] and keys[pygame.K_RIGHT]):
-        player_1.stay_control(animation_speed=12)
+        if(keys[pygame.K_LEFT] and keys[pygame.K_RIGHT]):
+            player_1.stay_control(animation_speed=12)
 
     screen.blit(imagen_fondo,imagen_fondo.get_rect()) #fundimos la imagen de fondo
 
@@ -68,6 +82,10 @@ while True:
     delta_ms = clock.tick(FPS)  #limitando que vaya a una velocidad determinada
     player_1.update(delta_ms,lista_plataformas)
     player_1.draw(screen)
+
+    enemigo_1.animation_enemy(delta_ms)
+    enemigo_1.update(delta_ms,lista_plataformas)
+    enemigo_1.draw(screen)
     
     # enemigos update
     # player dibujarlo

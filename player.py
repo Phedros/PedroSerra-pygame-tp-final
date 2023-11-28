@@ -5,23 +5,31 @@ from auxiliar import Auxiliar
 
 class Player:
     def __init__(self,x,y,speed_walk,speed_run,gravity,jump_power,max_high_jump,animation_speed) -> None:
-        self.walk_r = Auxiliar.getSurfaceFromSpriteSheet("images/caracters/stink/walk.png",5,1)
-        self.walk_l = Auxiliar.getSurfaceFromSpriteSheet("images/caracters/stink/walk.png",5,1,True)
-        self.stay_r = Auxiliar.getSurfaceFromSpriteSheet("images/caracters/stink/idle2.png",2,2)
-        self.stay_l = Auxiliar.getSurfaceFromSpriteSheet("images/caracters/stink/idle2.png",2,2,True)
-        self.jump_r = Auxiliar.getSurfaceFromSpriteSheet("images/caracters/stink/jump.png",2,1,False)
-        self.jump_l = Auxiliar.getSurfaceFromSpriteSheet("images/caracters/stink/jump.png",2,1,True)
-        self.frame = 0
-        self.lives = 3
-        self.score = 0
-        self.move_x = 0
-        self.move_y = 0
+        self.walk_r = Auxiliar.getSurfaceFromSpriteSheet("images/caracters/stink/walk2.png",1,5)
+        self.walk_l = Auxiliar.getSurfaceFromSpriteSheet("images/caracters/stink/walk2.png",1,5,True)
+        self.stay_r = Auxiliar.getSurfaceFromSpriteSheet("images\caracters\stink\stay2.png",1,4)
+        self.stay_l = Auxiliar.getSurfaceFromSpriteSheet("images/caracters/stink/stay2.png",1,4,True)
+        self.jump_r = Auxiliar.getSurfaceFromSpriteSheet("images/caracters/stink/jump2.png",1,2,False)
+        self.jump_l = Auxiliar.getSurfaceFromSpriteSheet("images/caracters/stink/jump2.png",1,2,True)
+        self.punch_r = Auxiliar.getSurfaceFromSpriteSheet("images\caracters\stink\punch.png",1,3)
+        self.punch_l = Auxiliar.getSurfaceFromSpriteSheet("images\caracters\stink\punch.png",1,3,True)
+        self.jump_punch_r = Auxiliar.getSurfaceFromSpriteSheet("images\caracters\stink\jump_punch2.png",1,4)
+        self.jump_punch_l = Auxiliar.getSurfaceFromSpriteSheet("images\caracters\stink\jump_punch2.png",1,4,True)
+
+
         self.speed_walk =  speed_walk
         self.speed_run =  speed_run
         self.gravity = gravity
         self.jump_power = jump_power
         self.jump_high = 0
         self.max_high_jump = max_high_jump
+
+        self.frame = 0
+        self.lives = 3
+        self.score = 0
+        self.move_x = 0
+        self.move_y = 0
+
         self.animation = self.walk_r
         self.image = self.animation[self.frame]
         self.rect = self.image.get_rect()
@@ -29,15 +37,16 @@ class Player:
         self.rect.y = y
         self.is_jump = False
         self.animation_speed = animation_speed
-        self.contador = 0
         self.direccion = DIRECCION_R
+        self.is_on_platform = False
+        self.contador = 0
         self.tiempo_transcurrido_animation = 0
         self.tiempo_transcurrido_move = 0
         self.frame_rate_ms = 12
         self.move_rate_ms = 12
-        self.is_on_platform = False
+        
 
-        self.rect_down_colition = pygame.Rect(self.rect.x/4, self.rect.y + self.rect.h - ALTURA_RECT_PISO, self.rect.h, ALTURA_RECT_PISO)
+        self.rect_down_colition = pygame.Rect(self.rect.x, self.rect.y + self.rect.h - ALTURA_RECT_CONTACTO, self.rect.h, ALTURA_RECT_CONTACTO)
         
 
     def walk_control(self,direccion,animation_speed):
@@ -63,6 +72,7 @@ class Player:
 
     def jump_control(self,on_off:bool,animation_speed:int):
         if(on_off and self.is_jump == False):
+            self.frame = 0
             self.move_y = -self.jump_power
             if(self.direccion == DIRECCION_R):
                 self.move_x = self.speed_walk
@@ -70,7 +80,6 @@ class Player:
             elif(self.direccion == DIRECCION_L):
                 self.move_x = -self.speed_walk
                 self.animation = self.jump_l
-            self.frame = 0
             self.is_jump = True
             self.animation_speed = animation_speed
             self.contador = 0
@@ -80,22 +89,39 @@ class Player:
             self.stay_control(12)
 
     def stay_control(self,animation_speed):
-        if(self.direccion == DIRECCION_R):
-            if (self.is_jump) or not self.is_on_platform:
-                self.animation = self.jump_r
-            else:
-                self.animation = self.stay_r
-        elif(self.direccion == DIRECCION_L):
-            if (self.is_jump) or not self.is_on_platform:
-                self.animation = self.jump_l
-            else:
-                self.animation = self.stay_l
-        self.move_x = 0
-        if not self.is_jump:
-            self.move_y = 0
-        #self.frame = 0
+        if(self.animation != self.stay_l and self.animation != self.stay_r):
+            if(self.direccion == DIRECCION_R):
+                self.frame = 0
+                if (self.is_jump) or not self.is_on_platform:
+                    self.animation = self.jump_r
+                else:
+                    self.animation = self.stay_r
+            elif(self.direccion == DIRECCION_L):
+                self.frame = 0
+                if (self.is_jump) or not self.is_on_platform:
+                    self.animation = self.jump_l
+                else:
+                    self.animation = self.stay_l
+            if not self.is_jump:
+                self.move_y = 0
+
+            self.move_x = 0
+            self.animation_speed = animation_speed
+
+    def punch(self,animation_speed):
+        if self.is_on_platform:
+            if self.direccion == DIRECCION_R:
+                self.animation = self.punch_r
+            if self.direccion == DIRECCION_L:
+                self.animation = self.punch_l
+        else:
+            if self.direccion == DIRECCION_R:
+                self.animation = self.jump_punch_r
+            if self.direccion == DIRECCION_L:
+                self.animation = self.jump_punch_l
+        self.frame = 0
         self.animation_speed = animation_speed
-        #self.contador = 0
+
 
     def do_movement(self,delta_ms):
         # self.tiempo_transcurrido_move += delta_ms
@@ -110,7 +136,7 @@ class Player:
         if self.jump_high >= self.max_high_jump:
             self.jump_control(False,animation_speed=8)
 
-        self.rect_down_colition = pygame.Rect(self.rect.x, self.rect.y + self.rect.h - ALTURA_RECT_PISO, self.rect.h, ALTURA_RECT_PISO)
+        self.rect_down_colition = pygame.Rect(self.rect.x + (self.rect.w/2.5), self.rect.y + self.rect.h - ALTURA_RECT_CONTACTO, self.rect.w/4, ALTURA_RECT_CONTACTO)
 
     def do_animation(self,delta_ms):
 
@@ -135,7 +161,7 @@ class Player:
         self.do_movement(delta_ms)
         self.do_animation(delta_ms)
         
-        print(f"altura del salto{self.jump_high}")
+
 
         #self.is_on_platform = True if self.rect.y >= FLOOR_HIGH else False
 
@@ -155,16 +181,14 @@ class Player:
                 if(self.rect_down_colition.colliderect(plataforma.rect_up_colition)):
                     retorno = True
                     break
-        
         return retorno
-    
-        
-
 
     def draw(self,screen):
         if DEBUG:
             pygame.draw.rect(screen,ROJO,self.rect)
             pygame.draw.rect(screen,VERDE,self.rect_down_colition)
+        print(f'animacion: {self.animation}')
+        print(f'frame: {self.frame}')
         self.image = self.animation[self.frame]
         screen.blit(self.image,self.rect)
         
