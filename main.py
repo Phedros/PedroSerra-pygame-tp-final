@@ -1,4 +1,4 @@
-import pygame
+import pygame as pg
 import sys
 from constantes import *
 from player import Player
@@ -11,6 +11,9 @@ pygame.init()
 clock = pygame.time.Clock()
 tiempo = 0
 tiempo_mil = 0
+
+background_music = pg.mixer.Sound("sound\Saint Seiya Opening Version 8 BITS.mp3")
+background_music.play()
 
 imagen_fondo = pygame.image.load("images/locations/forest/Santuario_Abel.png")
 imagen_fondo = pygame.transform.scale(imagen_fondo,(ANCHO_VENTANA,ALTO_VENTANA)) # Escalamos la imagen de fondo a la dimension de la ventana
