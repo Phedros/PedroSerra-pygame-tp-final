@@ -5,8 +5,6 @@ class Auxiliar:
     def __init__(self):
         self.time = TIEMPO_TOTAL
 
-
-
     @staticmethod
     def getSurfaceFromSpriteSheet(path,columnas,filas,flip=False, step = 1):
         lista = []
