@@ -1,6 +1,7 @@
 import pygame
 from auxiliar import Auxiliar
 from constantes import *
+from bullet import *
 
 class Enemy:
     def __init__(self,x,y,speed_walk,speed_run,gravity,jump_power,max_high_jump,animation_speed) -> None:
@@ -8,6 +9,8 @@ class Enemy:
         self.walk_l = Auxiliar.getSurfaceFromSpriteSheet("images\caracters\enemy\enemy_walk2.png",1,6,True)
         self.stay_r = Auxiliar.getSurfaceFromSpriteSheet("images\caracters\enemy\enemy_stay.png",1,1)
         self.stay_l = Auxiliar.getSurfaceFromSpriteSheet("images\caracters\enemy\enemy_stay.png",1,1,True)
+        self.hit_r = Auxiliar.getSurfaceFromSpriteSheet("images\caracters\enemy\enemy_hit.png",1,2)
+        self.hit_l = Auxiliar.getSurfaceFromSpriteSheet("images\caracters\enemy\enemy_hit.png",1,2,True)
 
         self.speed_walk = speed_walk
         self.speed_run = speed_run
@@ -34,6 +37,16 @@ class Enemy:
         self.contador = 0
         self.time_lapse = 0
         self.direction_flag = False
+
+        # Atributos para disparar y recargar
+        self.ready = True
+        self.bullet_time = 0
+        self.laser_cooldown = 600
+
+        self.is_hit = False
+        self.tiempo_transcurrido_hit = 0
+
+        self.bullet_group = pygame.sprite.Group()
 
         self.rect_down_colition = pygame.Rect(self.rect.x/4, self.rect.y + self.rect.h - ALTURA_RECT_CONTACTO, self.rect.h, ALTURA_RECT_CONTACTO)
 
@@ -106,12 +119,17 @@ class Enemy:
     
     def draw(self,screen):
         if DEBUG:
+            for bullet in self.bullet_group.sprites():
+                pygame.draw.rect(screen,ROJO,bullet.rect)
             pygame.draw.rect(screen,ROJO,self.rect)
             pygame.draw.rect(screen,VERDE,self.rect_down_colition)
         # print(f'frame: {self.frame}')
         # print(f'animation: {self.animation}')
         # print(f'speedWalk: {self.speed_walk}')
         
+        self.recharge()
+        self.bullet_group.draw(screen)
+        self.bullet_group.update()
         self.image = self.animation[self.frame]
         screen.blit(self.image,self.rect)
 
@@ -128,3 +146,33 @@ class Enemy:
                 self.direction_flag = True
             self.walk(animation_speed=6)
             self.time_lapse = 0
+        if self.time_lapse > 500 and self.ready:
+            self.bullet_group.add(self.create_bullet())
+            self.ready = False
+            self.bullet_time = pygame.time.get_ticks()
+
+    def recharge(self):
+        if not self.ready:
+            curent_time = pygame.time.get_ticks()
+            if curent_time - self.bullet_time >= self.laser_cooldown:
+                self.ready = True
+
+    def create_bullet(self):
+        return Bullet(pos_x=self.rect.x , pos_y=self.rect.y , direction=self.direccion , img_path='images\caracters\enemy\star_atack.png')
+
+    def hit_animation(self,delta_ms,primer_hit):
+        self.tiempo_transcurrido_hit += delta_ms
+        if (self.animation != self.hit_l and self.animation != self.hit_r):
+            if(self.direccion == DIRECCION_R):
+                self.animation = self.hit_r
+            else:
+                self.animation = self.hit_l
+            self.frame = 0
+            self.animation_speed = 2
+            self.is_hit = True
+            if primer_hit:
+                self.lives -= 1
+            
+        if self.tiempo_transcurrido_hit > 500:
+            self.is_hit = False
+            self.tiempo_transcurrido_hit = 0

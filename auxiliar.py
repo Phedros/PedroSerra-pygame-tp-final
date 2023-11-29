@@ -1,6 +1,10 @@
 import pygame
+from constantes import *
 
 class Auxiliar:
+    def __init__(self):
+        self.time = TIEMPO_TOTAL
+
     @staticmethod
     def getSurfaceFromSpriteSheet(path,columnas,filas,flip=False, step = 1):
         lista = []
@@ -17,3 +21,12 @@ class Auxiliar:
                     surface_fotograma = pygame.transform.flip(surface_fotograma,True,False)
                 lista.append(surface_fotograma)
         return lista
+    
+
+    def temporizador(self,tiempo):
+        self.time -= tiempo
+        format_time = self.time
+        format_time = int(format_time/1000)
+
+        return format_time
+
