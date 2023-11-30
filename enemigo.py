@@ -41,7 +41,7 @@ class Enemy:
         # Atributos para disparar y recargar
         self.ready = True
         self.bullet_time = 0
-        self.laser_cooldown = 600
+        self.bullet_cooldown = 600
 
         self.is_hit = False
         self.tiempo_transcurrido_hit = 0
@@ -154,7 +154,7 @@ class Enemy:
     def recharge(self):
         if not self.ready:
             curent_time = pygame.time.get_ticks()
-            if curent_time - self.bullet_time >= self.laser_cooldown:
+            if curent_time - self.bullet_time >= self.bullet_cooldown:
                 self.ready = True
 
     def create_bullet(self):
