@@ -22,4 +22,4 @@ ALTURA_RECT_CONTACTO = 10
 
 PATH_IMAGE = "/CLASE_19_inicio_juego/images/"
 
-GRAVITY = 8
+GRAVITY = 12

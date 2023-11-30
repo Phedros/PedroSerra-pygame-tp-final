@@ -31,3 +31,19 @@ class Auxiliar:
 
         return format_time
     
+    @staticmethod
+    def center_image(image):
+        ancho_imagen, alto_imagen = image.get_size()
+        distance = (ANCHO_VENTANA/2) - (ancho_imagen/2)
+        return distance
+    
+    @staticmethod
+    def center_rect(rect,direction):
+        if direction == 'W':
+            size = rect
+            distance = (ANCHO_VENTANA/2) - (size/2)
+        elif direction == 'H':
+            size = rect
+            distance = (ALTO_VENTANA/2) - (size/2)
+        return distance
+    

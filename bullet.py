@@ -10,6 +10,7 @@ class Bullet(pygame.sprite.Sprite):
         self.image = pygame.image.load(img_path)
         self.image = pygame.transform.scale(self.image, (ANCHO_BULLET, ALTO_BULLET))
         self.rect = self.image.get_rect(center=(pos_x, pos_y+(20)))
+        
 
     def update(self):
         
