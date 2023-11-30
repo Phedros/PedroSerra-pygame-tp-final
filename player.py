@@ -20,7 +20,7 @@ class Player:
         self.hit_l = Auxiliar.getSurfaceFromSpriteSheet("images\caracters\seiya\hit.png",1,2,True)
         self.dead_r = Auxiliar.getSurfaceFromSpriteSheet("images\caracters\seiya\dead.png",1,5,False)
         self.dead_l = Auxiliar.getSurfaceFromSpriteSheet("images\caracters\seiya\dead.png",1,5,True)
-        self.animation_pegasus = Auxiliar.getSurfaceFromSpriteSheet(r"images\caracters\seiya\animation_pegasus.png",1,19)
+        self.animation_pegasus = Auxiliar.getSurfaceFromSpriteSheet(r"images\caracters\seiya\animation_pegasus2.png",1,19)
         
 
         self.speed_walk =  speed_walk
@@ -327,7 +327,7 @@ class Player:
             self.hit_l = Auxiliar.getSurfaceFromSpriteSheet("images\caracters\seiya\hit.png",1,2,True)
             self.dead_r = Auxiliar.getSurfaceFromSpriteSheet("images\caracters\seiya\pegasus_dead.png",1,5,False)
             self.dead_l = Auxiliar.getSurfaceFromSpriteSheet("images\caracters\seiya\pegasus_dead.png",1,5,True)
-            self.animation_pegasus = Auxiliar.getSurfaceFromSpriteSheet(r"images\caracters\seiya\animation_pegasus.png",1,19)
+            self.animation_pegasus = Auxiliar.getSurfaceFromSpriteSheet(r"images\caracters\seiya\animation_pegasus2.png",1,19)
 
             self.lives = player.lives + 3
             self.is_super_pegasus = True
@@ -350,7 +350,7 @@ class Player:
             self.hit_l = Auxiliar.getSurfaceFromSpriteSheet("images\caracters\seiya\hit.png",1,2,True)
             self.dead_r = Auxiliar.getSurfaceFromSpriteSheet("images\caracters\seiya\dead.png",1,5,False)
             self.dead_l = Auxiliar.getSurfaceFromSpriteSheet("images\caracters\seiya\dead.png",1,5,True)
-            self.animation_pegasus = Auxiliar.getSurfaceFromSpriteSheet(r"images\caracters\seiya\animation_pegasus.png",1,19)
+            self.animation_pegasus = Auxiliar.getSurfaceFromSpriteSheet(r"images\caracters\seiya\animation_pegasus2.png",1,19)
 
             self.double_jump = False
             self.lives = player.lives

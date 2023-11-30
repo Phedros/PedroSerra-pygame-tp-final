@@ -51,6 +51,7 @@ class Enemy:
         self.dead_proces = False
         self.is_dead = False
         self.destroy = False
+        self.score_flag = True
 
         self.direccion_golpe = DIRECCION_L
 
@@ -170,14 +171,19 @@ class Enemy:
                 self.ready = True
 
     def create_bullet(self):
-        return Bullet(pos_x=self.rect.x , pos_y=self.rect.y , direction=self.direccion , img_path='images\caracters\enemy\star_atack.png')
+        if self.direccion == DIRECCION_L:
+            pos_x=self.rect.x
+        else:
+            pos_x=self.rect.x + self.rect.w
+        pos_y=self.rect.y
+        return Bullet(pos_x, pos_y , direction=self.direccion , img_path='images\caracters\enemy\star_atack.png')
 
     def hit_animation(self,delta_ms,direccion):
         self.lives -= 1
         if self.lives <= 0:
             self.is_dead = True
             if self.animation != self.die_r or self.animation != self.die_l :
-                self.dead_animation(delta_ms,direccion)
+                score = self.dead_animation(delta_ms,direccion)
         else:
             self.tiempo_transcurrido_hit += delta_ms
             #if (self.animation != self.hit_l and self.animation != self.hit_r):
@@ -193,6 +199,7 @@ class Enemy:
             if self.tiempo_transcurrido_hit > 500:
                 self.is_hit = False
                 self.tiempo_transcurrido_hit = 0
+        return score
 
     def dead_animation(self,delta_ms,direccion):
         self.direccion_golpe = direccion
@@ -207,9 +214,16 @@ class Enemy:
             self.dead_proces = True
             self.frame = 0
             self.animation_speed = 25
+            if self.score_flag:
+                self.score_flag = False
+                return True
+            
             
 
         if self.tiempo_transcurrido_dead > 500:
             self.frame = 4
         if self.tiempo_transcurrido_dead > 2000:
             self.destroy = True
+            self.rect.x = -100
+            self.rect.y = -100
+            
