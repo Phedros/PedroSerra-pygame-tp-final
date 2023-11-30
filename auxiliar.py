@@ -1,6 +1,7 @@
 import pygame
 from constantes import *
 
+
 class Auxiliar:
     def __init__(self):
         self.time = TIEMPO_TOTAL
@@ -29,4 +30,4 @@ class Auxiliar:
         format_time = int(format_time/1000)
 
         return format_time
-
+    
