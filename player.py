@@ -2,6 +2,7 @@ from doctest import FAIL_FAST
 import pygame
 from constantes import *
 from auxiliar import Auxiliar
+from bullet import *
 
 class Player:
     def __init__(self,x,y,speed_walk,speed_run,gravity,jump_power,max_high_jump,animation_speed) -> None:
@@ -68,8 +69,12 @@ class Player:
         self.is_super_pegasus = False
         self.double_jump = False
         self.doing_double_jump = False
-        
-        
+
+        # Atributos para disparar y recargar
+        self.ready = True
+        self.bullet_time = 0
+        self.bullet_cooldown = 50
+        self.bullet_group = pygame.sprite.Group()
 
         self.rect_down_colition = pygame.Rect(self.rect.x, self.rect.y + self.rect.h - ALTURA_RECT_CONTACTO, self.rect.h, ALTURA_RECT_CONTACTO)
         self.rect_limit_colition = pygame.Rect((self.rect.x+self.rect.w/3), self.rect.y, self.rect.w/3, self.rect.h)        
@@ -181,14 +186,6 @@ class Player:
         self.rect_limit_colition = pygame.Rect((self.rect.x+self.rect.w/3), self.rect.y, self.rect.w/3, self.rect.h)
 
     def do_animation(self,delta_ms):
-        if (self.animation_mode and self.frame == 18):
-            self.animation_mode = False
-            self.animation = self.stay_r
-            self.frame = 0
-            self.rect.x = self.location_x
-            self.rect.y = self.location_y - 2
-            self.gravity = GRAVITY
-
 
         if(self.contador >= self.animation_speed):
             if(self.frame < len(self.animation) - 1):
@@ -202,6 +199,7 @@ class Player:
         else:
             self.contador += 1
 
+        self.check_pegasus_animation_mode()
 
     def update(self,delta_ms,lista_plataformas):
         self.do_movement(delta_ms)
@@ -232,8 +230,9 @@ class Player:
             pygame.draw.rect(screen,ROJO,self.rect)
             pygame.draw.rect(screen,YELLOW,self.rect_limit_colition)
             pygame.draw.rect(screen,VERDE,self.rect_down_colition)
-        print(f'animacion: {self.animation}')
-        print(f'frame: {self.frame}')
+        self.recharge()
+        self.bullet_group.draw(screen)
+        self.bullet_group.update()
         self.image = self.animation[self.frame]
         screen.blit(self.image,self.rect)
         
@@ -379,3 +378,32 @@ class Player:
             self.rect.x = self.location_x
             self.rect.y = self.location_y
             self.gravity = GRAVITY
+
+    def check_pegasus_animation_mode(self):
+        if (self.animation_mode and self.frame == 18):
+            self.animation_mode = False
+            self.animation = self.stay_r
+            self.frame = 0
+            self.rect.x = self.location_x
+            self.rect.y = self.location_y - 2
+            self.gravity = GRAVITY
+
+    def recharge(self):
+        if not self.ready:
+            curent_time = pygame.time.get_ticks()
+            if curent_time - self.bullet_time >= self.bullet_cooldown:
+                self.ready = True
+
+    def create_bullet(self):
+        if self.direccion == DIRECCION_L:
+            pos_x=self.rect.x
+        else:
+            pos_x=self.rect.x + self.rect.w
+        pos_y=self.rect.y
+        return Bullet(pos_x , pos_y , direction=self.direccion , img_path='images\caracters\seiya\pegasus_shoot.png')
+
+    def shoot_bullet(self):
+        if self.ready:
+            self.bullet_group.add(self.create_bullet())
+            self.ready = False
+            self.bullet_time = pygame.time.get_ticks()
