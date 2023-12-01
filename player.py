@@ -69,6 +69,10 @@ class Player:
         self.is_super_pegasus = False
         self.double_jump = False
         self.doing_double_jump = False
+        self.countdown_pegasus_mode = False
+        self.tiempo_transcurrido_pegasus_mode = 0
+
+        self.have_box = False
 
         # Atributos para disparar y recargar
         self.ready = True
@@ -199,7 +203,7 @@ class Player:
         else:
             self.contador += 1
 
-        self.check_pegasus_animation_mode()
+        self.check_pegasus_animation_mode(delta_ms)
 
     def update(self,delta_ms,lista_plataformas):
         self.do_movement(delta_ms)
@@ -233,6 +237,7 @@ class Player:
         self.recharge()
         self.bullet_group.draw(screen)
         self.bullet_group.update()
+
         self.image = self.animation[self.frame]
         screen.blit(self.image,self.rect)
         
@@ -308,6 +313,8 @@ class Player:
         self.rect_limit_colition = player.rect_limit_colition
         self.animation_mode = player.animation_mode
         self.doing_double_jump = player.doing_double_jump
+        self.countdown_pegasus_mode = player.countdown_pegasus_mode
+        self.tiempo_transcurrido_pegasus_mode = player.tiempo_transcurrido_pegasus_mode
         
         self.location_x = player.location_x
         self.location_y = player.location_y
@@ -379,7 +386,7 @@ class Player:
             self.rect.y = self.location_y
             self.gravity = GRAVITY
 
-    def check_pegasus_animation_mode(self):
+    def check_pegasus_animation_mode(self,delta_ms):
         if (self.animation_mode and self.frame == 18):
             self.animation_mode = False
             self.animation = self.stay_r
@@ -387,6 +394,10 @@ class Player:
             self.rect.x = self.location_x
             self.rect.y = self.location_y - 2
             self.gravity = GRAVITY
+
+        
+
+
 
     def recharge(self):
         if not self.ready:
