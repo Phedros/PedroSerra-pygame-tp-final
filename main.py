@@ -6,6 +6,7 @@ from plataforma import Platform
 from enemigo import *
 from button import *
 from auxiliar import *
+from box import *
 
 pygame.init()
 
@@ -46,9 +47,9 @@ start_button = Button(300,360,start_img)
 settings_button = Button(300,480,settings_img)
 exit_button = Button(300,600,exit_img)
     #Pause
-resume_button_pause = Button(Auxiliar.center_image(resume_img),300,resume_img)
-settings_button_pause = Button(Auxiliar.center_image(settings_pause_img),450,settings_pause_img)
-quit_button_pause = Button(Auxiliar.center_image(quit_img),600,quit_img)
+resume_button_pause = Button(Auxiliar.center_image(resume_img)-30,300,resume_img)
+settings_button_pause = Button(Auxiliar.center_image(settings_pause_img)-30,450,settings_pause_img)
+quit_button_pause = Button(Auxiliar.center_image(quit_img)-30,600,quit_img)
     #Game Over
 menu_button_game_over = Button(300,480,menu_img)
 quit_button_game_over = Button(300,600,quit_img)
@@ -64,6 +65,8 @@ def gameplay():
 
     # Bullet
     bullet_group = pygame.sprite.Group()
+
+    # Creacion personajes
 
     player_1 = Player(
         x=0,
@@ -88,17 +91,42 @@ def gameplay():
         )
     
     enemy_list = []
+    enemy_list.append(Enemy(
+                            x=720,
+                            y=110,
+                            speed_walk= 2,
+                            speed_run=8,
+                            gravity=GRAVITY,
+                            jump_power=25,
+                            max_high_jump = 450,      
+                            animation_speed=12
+                            ))
+    enemy_list.append(Enemy(
+                            x=220,
+                            y=110,
+                            speed_walk= 2,
+                            speed_run=8,
+                            gravity=GRAVITY,
+                            jump_power=25,
+                            max_high_jump = 450,      
+                            animation_speed=12
+                            ))
+    
+    enemy_list.append(Enemy(
+                            x=1220,
+                            y=110,
+                            speed_walk= 2,
+                            speed_run=8,
+                            gravity=GRAVITY,
+                            jump_power=25,
+                            max_high_jump = 450,      
+                            animation_speed=12
+                            ))
+    box_list = []
+    box_list.append(Box(130,300))
 
-    enemigo_1 = Enemy(
-        x=720,
-        y=110,
-        speed_walk= 2,
-        speed_run=8,
-        gravity=GRAVITY,
-        jump_power=25,
-        max_high_jump = 450,      
-        animation_speed=12
-    )
+    box = Box(130,300)
+    
 
     tiempo = Auxiliar()
 
@@ -114,6 +142,7 @@ def gameplay():
     platform_list.append(Platform(1320,450,60,60))
     platform_list.append(Platform(1380,450,60,60))
     platform_list.append(Platform(1440,450,60,60))
+    #Platform()
 
     platform_list.append(Platform(600,250,60,60))
     platform_list.append(Platform(660,250,60,60))
@@ -135,8 +164,12 @@ def gameplay():
                         is_pause = True
                         main_pause(is_pause)
                         gameplay_music.play(-1)
-                    if event.key == pygame.K_s:
+                    if event.key == pygame.K_s and player_1.have_box:
                         player_1 = super_player_1.super_pegasus(player_1,delta_ms) 
+                        player_1.have_box = False
+                        for box in box_list:
+                            box_list.remove(box)
+
                         #if not player_1.is_super_pegasus:
                         
 
@@ -189,38 +222,55 @@ def gameplay():
             plataforma.draw(screen)
 
         delta_ms = clock.tick(FPS)  #limitando que vaya a una velocidad determinada
-        
-        enemigo_1.animation_enemy(delta_ms)
-        enemigo_1.update(delta_ms,platform_list)
-        enemigo_1.draw(screen)
+
+        for box in box_list:
+            box.update(platform_list)
+            box.draw(screen)
+
+        for enemy in enemy_list:
+            enemy.animation_enemy(delta_ms)
+            enemy.update(delta_ms,platform_list)
+            enemy.draw(screen)
 
         player_1.update(delta_ms,platform_list)
         player_1.draw(screen)
 
-        if not player_1.animation_mode:
-            for bullet in enemigo_1.bullet_group.sprites():
-                if(bullet.rect.colliderect(player_1.rect_limit_colition)) or \
-                    enemigo_1.rect.colliderect(player_1.rect_limit_colition):
+        for box in box_list:
+            if(player_1.rect_limit_colition.colliderect(box.rect) and not player_1.have_box):
+                player_1.have_box = True
+                box.show_box_in_screen()
 
-                    player_1.animation = player_1.hit_animation(delta_ms,True)
+        for enemy in enemy_list:
+            if not player_1.animation_mode and not enemy.is_dead:
+                for bullet in enemy.bullet_group.sprites():
+                    if(bullet.rect.colliderect(player_1.rect_limit_colition)) or \
+                        enemy.rect.colliderect(player_1.rect_limit_colition):
+
+                        player_1.animation = player_1.hit_animation(delta_ms,True)
+                        bullet.kill()
+
+            for bullet in player_1.bullet_group.sprites():
+                if(bullet.rect.colliderect(enemy.rect)):
+                    score = enemy.hit_animation(delta_ms,bullet.direction)
+                    enemy.move_x = 0
+                    enemy.ready = False
                     bullet.kill()
+                    if score:
+                        player_1.score += 100
 
-        for bullet in player_1.bullet_group.sprites():
-            if(bullet.rect.colliderect(enemigo_1.rect)):
-                score = enemigo_1.hit_animation(delta_ms,bullet.direction)
-                enemigo_1.move_x = 0
-                enemigo_1.ready = False
-                bullet.kill()
-                if score:
-                    player_1.score += 100
+            if (player_1.is_punching):
+                if(player_1.rect.colliderect(enemy.rect)) or enemy.is_hit:
+                    score = enemy.hit_animation(delta_ms,player_1.direccion)
+                    enemy.move_x = 0
+                    enemy.ready = False
+                    if score:
+                        player_1.score += 100
 
-        if (player_1.is_punching):
-            if(player_1.rect.colliderect(enemigo_1.rect)) or enemigo_1.is_hit:
-                score = enemigo_1.hit_animation(delta_ms,player_1.direccion)
-                enemigo_1.move_x = 0
-                enemigo_1.ready = False
-                if score:
-                    player_1.score += 100
+            if (player_1.is_super_pegasus and not player_1.countdown_pegasus_mode):
+                player_1.tiempo_transcurrido_pegasus_mode += delta_ms
+                if player_1.tiempo_transcurrido_pegasus_mode > TIEMPO_PEGASUS_MODE:
+                    player_1.countdown_pegasus_mode = True
+                    player_1 = super_player_1.super_pegasus(player_1,delta_ms)
         
         
         # enemigos update
