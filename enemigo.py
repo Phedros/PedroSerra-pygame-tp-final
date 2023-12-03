@@ -119,14 +119,14 @@ class Enemy:
 
     def is_on_floor(self,lista_plataformas):
         retorno = False
-        if self.rect.y >= FLOOR_HIGH :
-            self.is_on_platform = True
-            retorno = True
-        else:
-            for plataforma in lista_plataformas:
-                if(self.rect_down_colition.colliderect(plataforma.rect_up_colition)):
-                    retorno = True
-                    break
+        # if self.rect.y >= FLOOR_HIGH :
+        #     self.is_on_platform = True
+        #     retorno = True
+        # else:
+        for plataforma in lista_plataformas:
+            if(self.rect_down_colition.colliderect(plataforma.rect_up_colition)):
+                retorno = True
+                break
         return retorno
     
     def draw(self,screen):
@@ -224,6 +224,6 @@ class Enemy:
             self.frame = 4
         if self.tiempo_transcurrido_dead > 2000:
             self.destroy = True
-            self.rect.x = -100
-            self.rect.y = -100
+            # self.rect.x = -100
+            # self.rect.y = -100
             

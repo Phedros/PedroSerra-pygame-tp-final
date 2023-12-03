@@ -38,14 +38,11 @@ class Box(pg.sprite.Sprite):
 
     def is_on_floor(self,lista_plataformas):
         retorno = False
-        if self.rect.y >= FLOOR_HIGH :
-            self.is_on_platform = True
-            retorno = True
-        else:
-            for plataforma in lista_plataformas:
-                if(self.rect.colliderect(plataforma.rect_up_colition)):
-                    retorno = True
-                    break
+        
+        for plataforma in lista_plataformas:
+            if(self.rect.colliderect(plataforma.rect_up_colition)):
+                retorno = True
+                break
         return retorno
     
     def show_box_in_screen(self):
