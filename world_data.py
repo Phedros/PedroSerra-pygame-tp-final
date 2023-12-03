@@ -38,13 +38,40 @@ class World():
     def load_level(num_level:int, json_file, objet_to_load):
         match num_level:
             case 1:
-                json_level = json_file["level_one"]
+                json_level = json_file["level_1"]
                 object = World.load_objet(objet_to_load, json_level)
             case 2:
-                json_level = json_file["level_two"]
+                json_level = json_file["level_2"]
                 object = World.load_objet(objet_to_load, json_level)
             case 3:
-                json_level = json_file["level_three"]
+                json_level = json_file["level_3"]
+                object = World.load_objet(objet_to_load, json_level)
+            case 4:
+                json_level = json_file["level_4"]
+                object = World.load_objet(objet_to_load, json_level)
+            case 5:
+                json_level = json_file["level_5"]
+                object = World.load_objet(objet_to_load, json_level)
+            case 6:
+                json_level = json_file["level_6"]
+                object = World.load_objet(objet_to_load, json_level)
+            case 7:
+                json_level = json_file["level_7"]
+                object = World.load_objet(objet_to_load, json_level)
+            case 8:
+                json_level = json_file["level_8"]
+                object = World.load_objet(objet_to_load, json_level)
+            case 9:
+                json_level = json_file["level_9"]
+                object = World.load_objet(objet_to_load, json_level)
+            case 10:
+                json_level = json_file["level_10"]
+                object = World.load_objet(objet_to_load, json_level)
+            case 11:
+                json_level = json_file["level_11"]
+                object = World.load_objet(objet_to_load, json_level)
+            case 12:
+                json_level = json_file["level_12"]
                 object = World.load_objet(objet_to_load, json_level)
         return object
 

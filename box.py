@@ -50,3 +50,4 @@ class Box(pg.sprite.Sprite):
         self.rect.x = 1100
         self.rect.y = 20
         self.gravity = 0
+        

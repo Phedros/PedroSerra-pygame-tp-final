@@ -8,6 +8,7 @@ from button import *
 from auxiliar import *
 from box import *
 from world_data import *
+from gold import *
 
 pygame.init()
 
@@ -66,13 +67,17 @@ font = pygame.font.SysFont("Bauhaus 93",40)
 font_setting = pygame.font.SysFont("Calisto MT",60)
 font_menu = pygame.font.SysFont("ITC Machine",50)
 
-def gameplay(level):
+
+
+def gameplay(level,score):
+    total_score = score
     pg.mixer.music.load("sound\Saint Seiya - Gameplay.mp3")
     pg.mixer.music.play(-1)
     #gameplay_music.play(loops=-1)
     is_pause = False
+    ready_to_pass = False
+    gold_enter_flag = True
 
-    global actual_level
     actual_level = level
 
     # control tiempo
@@ -96,6 +101,7 @@ def gameplay(level):
         max_high_jump = dict_player["max_high_jump"],      
         animation_speed=dict_player["animation_speed"]
         )
+    player_1.score = total_score
     
     dict_super_player = World.load_level(actual_level,json_file,'super_player')
     super_player_1 = Player(
@@ -129,6 +135,11 @@ def gameplay(level):
 
     box_list = []
     box_list.append(box)
+
+
+    gold_list = []
+    
+    
 
     tiempo = Auxiliar()
 
@@ -229,10 +240,23 @@ def gameplay(level):
         player_1.update(delta_ms,platform_list)
         player_1.draw(screen)
 
+        if ready_to_pass:
+            for gold in gold_list:
+                gold.update(platform_list)
+                gold.draw(screen)
+
+        
+
         for box in box_list:
             if(player_1.rect_limit_colition.colliderect(box.rect) and not player_1.have_box):
                 player_1.have_box = True
                 box.show_box_in_screen()
+        
+        for gold in gold_list:
+            if player_1.rect.colliderect(gold.rect):
+                gold_list.remove(gold)
+                actual_level += 1
+                main_selec_levels(total_score,actual_level)
 
         for enemy in enemy_list:
             if not player_1.animation_mode and not enemy.is_dead:
@@ -266,17 +290,12 @@ def gameplay(level):
                     player_1.countdown_pegasus_mode = True
                     player_1 = super_player_1.super_pegasus(player_1,delta_ms)
         
-        
-        # enemigos update
-        # player dibujarlo
-        # dibujar todo el nivel
-        if player_1.game_over:
-            main_game_over()
+        if len(enemy_list) == 0  and gold_enter_flag:
+                gold_enter_flag = False
+                gold_list.append(Gold(actual_level))
+                ready_to_pass = True
+                total_score += player_1.score
 
-        if len(enemy_list) == 0:
-            actual_level += 1
-            main_selec_levels()
-        
         time = tiempo.temporizador(int(delta_ms))
         draw_text(f"Health: {player_1.lives}", font, NEGRO, ANCHO_VENTANA/25,12)
         draw_text(f"Time: {time}", font, NEGRO, ANCHO_VENTANA/2.3,12)
@@ -285,6 +304,9 @@ def gameplay(level):
         draw_text(f"Health: {player_1.lives}", font, ROJO, ANCHO_VENTANA/25 +3,15)
         draw_text(f"Time: {time}", font, ROJO, ANCHO_VENTANA/2.3 +3,15)
         draw_text(f"Score: {player_1.score}", font, ROJO, ANCHO_VENTANA/1.2 +3,15)
+
+        if player_1.game_over or time <= 0:
+            main_game_over()
 
         if DEBUG:
             World.draw_grid(screen, tile_size)
@@ -300,21 +322,113 @@ def gameplay(level):
 
         #print(f'clock: {tiempo_int}')
 
-def main_selec_levels():
+def main_selec_levels(new_total_score, new_level):
+    total_score = new_total_score
+    actual_level = new_level
     pg.mixer.music.load("sound\Saint Seiya - Level selec.mp3")
     pg.mixer.music.play(-1)
 
     pygame.display.set_caption("Selec Level")
-    global actual_level
+    
 
     while True:
         screen.blit(imagen_fondo_levels,imagen_fondo_levels.get_rect())
         mouse_pos = pygame.mouse.get_pos()
+        #print(mouse_pos)
         clicked = False
 
-        level_one_button.draw(screen,mouse_pos)
-        if actual_level >= 2:
-            level_two_button.draw(screen,mouse_pos)
+        match actual_level:
+            case 1:
+                level_1_button.draw(screen,mouse_pos)
+            case 2:
+                level_1_button.draw(screen,mouse_pos)
+                level_2_button.draw(screen,mouse_pos)
+            case 3:
+                level_1_button.draw(screen,mouse_pos)
+                level_2_button.draw(screen,mouse_pos)
+                level_3_button.draw(screen,mouse_pos)
+            case 4:
+                level_1_button.draw(screen,mouse_pos)
+                level_2_button.draw(screen,mouse_pos)
+                level_3_button.draw(screen,mouse_pos)
+                level_4_button.draw(screen,mouse_pos)
+            case 5:
+                level_1_button.draw(screen,mouse_pos)
+                level_2_button.draw(screen,mouse_pos)
+                level_3_button.draw(screen,mouse_pos)
+                level_4_button.draw(screen,mouse_pos)
+                level_5_button.draw(screen,mouse_pos)
+            case 6:
+                level_1_button.draw(screen,mouse_pos)
+                level_2_button.draw(screen,mouse_pos)
+                level_3_button.draw(screen,mouse_pos)
+                level_4_button.draw(screen,mouse_pos)
+                level_5_button.draw(screen,mouse_pos)
+                level_6_button.draw(screen,mouse_pos)
+            case 7:
+                level_1_button.draw(screen,mouse_pos)
+                level_2_button.draw(screen,mouse_pos)
+                level_3_button.draw(screen,mouse_pos)
+                level_4_button.draw(screen,mouse_pos)
+                level_5_button.draw(screen,mouse_pos)
+                level_6_button.draw(screen,mouse_pos)
+                level_7_button.draw(screen,mouse_pos)
+            case 8:
+                level_1_button.draw(screen,mouse_pos)
+                level_2_button.draw(screen,mouse_pos)
+                level_3_button.draw(screen,mouse_pos)
+                level_4_button.draw(screen,mouse_pos)
+                level_5_button.draw(screen,mouse_pos)
+                level_6_button.draw(screen,mouse_pos)
+                level_7_button.draw(screen,mouse_pos)
+                level_8_button.draw(screen,mouse_pos)
+            case 9:
+                level_1_button.draw(screen,mouse_pos)
+                level_2_button.draw(screen,mouse_pos)
+                level_3_button.draw(screen,mouse_pos)
+                level_4_button.draw(screen,mouse_pos)
+                level_5_button.draw(screen,mouse_pos)
+                level_6_button.draw(screen,mouse_pos)
+                level_7_button.draw(screen,mouse_pos)
+                level_8_button.draw(screen,mouse_pos)
+                level_9_button.draw(screen,mouse_pos)
+            case 10:
+                level_1_button.draw(screen,mouse_pos)
+                level_2_button.draw(screen,mouse_pos)
+                level_3_button.draw(screen,mouse_pos)
+                level_4_button.draw(screen,mouse_pos)
+                level_5_button.draw(screen,mouse_pos)
+                level_6_button.draw(screen,mouse_pos)
+                level_7_button.draw(screen,mouse_pos)
+                level_8_button.draw(screen,mouse_pos)
+                level_9_button.draw(screen,mouse_pos)
+                level_10_button.draw(screen,mouse_pos)
+            case 11:
+                level_1_button.draw(screen,mouse_pos)
+                level_2_button.draw(screen,mouse_pos)
+                level_3_button.draw(screen,mouse_pos)
+                level_4_button.draw(screen,mouse_pos)
+                level_5_button.draw(screen,mouse_pos)
+                level_6_button.draw(screen,mouse_pos)
+                level_7_button.draw(screen,mouse_pos)
+                level_8_button.draw(screen,mouse_pos)
+                level_9_button.draw(screen,mouse_pos)
+                level_10_button.draw(screen,mouse_pos)
+                level_11_button.draw(screen,mouse_pos)
+            case 12:
+                level_1_button.draw(screen,mouse_pos)
+                level_2_button.draw(screen,mouse_pos)
+                level_3_button.draw(screen,mouse_pos)
+                level_4_button.draw(screen,mouse_pos)
+                level_5_button.draw(screen,mouse_pos)
+                level_6_button.draw(screen,mouse_pos)
+                level_7_button.draw(screen,mouse_pos)
+                level_8_button.draw(screen,mouse_pos)
+                level_9_button.draw(screen,mouse_pos)
+                level_10_button.draw(screen,mouse_pos)
+                level_11_button.draw(screen,mouse_pos)
+                level_12_button.draw(screen,mouse_pos)
+            
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -322,10 +436,42 @@ def main_selec_levels():
                 sys.exit()
 
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and clicked == False:
-                if level_one_button.rect.collidepoint(mouse_pos):
+                if level_1_button.rect.collidepoint(mouse_pos):
                     clicked = True
-                    intro_music.stop()
-                    gameplay(actual_level)
+                    gameplay(actual_level,total_score)
+                elif level_2_button.rect.collidepoint(mouse_pos):
+                    clicked = True
+                    gameplay(actual_level,total_score)
+                elif level_3_button.rect.collidepoint(mouse_pos):
+                    clicked = True
+                    gameplay(actual_level,total_score)
+                elif level_4_button.rect.collidepoint(mouse_pos):
+                    clicked = True
+                    gameplay(actual_level,total_score)
+                elif level_5_button.rect.collidepoint(mouse_pos):
+                    clicked = True
+                    gameplay(actual_level,total_score)
+                elif level_6_button.rect.collidepoint(mouse_pos):
+                    clicked = True
+                    gameplay(actual_level,total_score)
+                elif level_7_button.rect.collidepoint(mouse_pos):
+                    clicked = True
+                    gameplay(actual_level,total_score)
+                elif level_8_button.rect.collidepoint(mouse_pos):
+                    clicked = True
+                    gameplay(actual_level,total_score)
+                elif level_9_button.rect.collidepoint(mouse_pos):
+                    clicked = True
+                    gameplay(actual_level,total_score)
+                elif level_10_button.rect.collidepoint(mouse_pos):
+                    clicked = True
+                    gameplay(actual_level,total_score)
+                elif level_11_button.rect.collidepoint(mouse_pos):
+                    clicked = True
+                    gameplay(actual_level,total_score)
+                elif level_12_button.rect.collidepoint(mouse_pos):
+                    clicked = True
+                    gameplay(actual_level,total_score)
                 
             if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
                 clicked = False
@@ -399,7 +545,7 @@ def main_setting():
         sound_button_setting.draw(screen,mouse_pos)
         info_button_setting.draw(screen,mouse_pos)
         question_button_setting.draw(screen,mouse_pos)
-        quit_button_game_over.draw(screen,mouse_pos)
+        quit_button_setting.draw(screen,mouse_pos)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -407,7 +553,7 @@ def main_setting():
                 sys.exit()
 
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and clicked == False:
-                if quit_button_game_over.rect.collidepoint(mouse_pos):
+                if quit_button_setting.rect.collidepoint(mouse_pos):
                     clicked = True
                     main_menu()
                 elif up_button_setting_music.rect.collidepoint(mouse_pos):
@@ -446,6 +592,7 @@ def main_setting():
         pygame.display.update()
 
 def main_menu():
+    total_score = 0
     pygame.display.set_caption("Menu")
     clicked = False
     pg.mixer.music.load("sound\Saint Seiya - Intro.mp3")
@@ -467,7 +614,7 @@ def main_menu():
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and clicked == False:
                 if start_button.rect.collidepoint(mouse_pos):
                     clicked = True
-                    main_selec_levels()
+                    main_selec_levels(total_score, 1)
                 if settings_button.rect.collidepoint(mouse_pos):
                     clicked = True
                     main_setting()
