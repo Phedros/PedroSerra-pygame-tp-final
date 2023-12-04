@@ -175,6 +175,8 @@ next_button = Button(1200,620,next_img)
 
 armo_location_x = 1100
 armo_location_y = 600
+    #Score
+quit_button_score = Button(ANCHO_VENTANA/2 - 150,ALTO_VENTANA-110,quit_img)
     #Gold armo
 aries_button = Button(armo_location_x,armo_location_y,aries_armo_img)
 
