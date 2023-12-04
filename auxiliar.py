@@ -1,5 +1,6 @@
 import pygame
 from constantes import *
+import json
 
 
 class Auxiliar:
@@ -47,3 +48,23 @@ class Auxiliar:
             distance = (ALTO_VENTANA/2) - (size/2)
         return distance
     
+    @staticmethod
+    def read_json(file_name):
+        try:
+            with open(file_name, "r", encoding = "utf-8") as file:
+                loaded_file = json.load(file)
+                # lista_jugadores_uno = loaded_file.get("jugadores", "no se obtuvo lista de jugadores")
+                return loaded_file
+        except Exception:
+            print(f"Error trying to open {file_name}")
+
+    @staticmethod
+    def list_to_json(lista, nombre_archivo):
+        # Convierte la lista a formato JSON
+        json_resultado = json.dumps(lista, indent=2)
+
+        # Guarda el JSON en un archivo
+        with open(nombre_archivo, 'w') as archivo:
+            archivo.write(json_resultado)
+
+

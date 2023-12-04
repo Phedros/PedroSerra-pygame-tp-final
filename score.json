@@ -1,0 +1,14 @@
+{
+    "pos_1":{
+        "player":{
+            "name": "Pedro",
+            "score": 500
+        }
+    },
+    "pos_2":{
+        "player":{
+            "name": "Pedro",
+            "score": 500
+        }
+    }
+}

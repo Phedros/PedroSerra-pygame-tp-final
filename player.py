@@ -31,7 +31,7 @@ class Player:
         self.max_high_jump = max_high_jump
 
         self.frame = 0
-        self.lives = 5
+        self.lives = 1
         self.score = 0
         self.move_x = 0
         self.move_y = 0
@@ -219,14 +219,14 @@ class Player:
 
     def is_on_floor(self,lista_plataformas):
         retorno = False
-        if self.rect.y >= FLOOR_HIGH :
-            self.is_on_platform = True
-            retorno = True
-        else:
-            for plataforma in lista_plataformas:
-                if(self.rect_down_colition.colliderect(plataforma.rect_up_colition)):
-                    retorno = True
-                    break
+        # if self.rect.y >= FLOOR_HIGH :
+        #     self.is_on_platform = True
+        #     retorno = True
+        # else:
+        for plataforma in lista_plataformas:
+            if(self.rect_down_colition.colliderect(plataforma.rect_up_colition)):
+                retorno = True
+                break
         return retorno
 
     def draw(self,screen):
@@ -336,7 +336,7 @@ class Player:
             self.dead_l = Auxiliar.getSurfaceFromSpriteSheet("images\caracters\seiya\pegasus_dead.png",1,5,True)
             self.animation_pegasus = Auxiliar.getSurfaceFromSpriteSheet(r"images\caracters\seiya\animation_pegasus2.png",1,19)
 
-            self.lives = player.lives + 3
+            self.lives = player.lives + 1
             self.is_super_pegasus = True
             self.double_jump = True
             self.do_pegasus_animation(delta_ms)
@@ -380,11 +380,13 @@ class Player:
             self.animation_speed = 6
             self.animation_mode = True
             self.gravity = 0
-        if self.tiempo_transcurrido_animation > 500:
-            self.animation_mode = False
-            self.rect.x = self.location_x
-            self.rect.y = self.location_y
-            self.gravity = GRAVITY
+
+
+        # if self.tiempo_transcurrido_animation > 500:
+        #     self.animation_mode = False
+        #     self.rect.x = self.location_x
+        #     self.rect.y = self.location_y
+        #     self.gravity = GRAVITY
 
     def check_pegasus_animation_mode(self,delta_ms):
         if (self.animation_mode and self.frame == 18):
@@ -392,7 +394,7 @@ class Player:
             self.animation = self.stay_r
             self.frame = 0
             self.rect.x = self.location_x
-            self.rect.y = self.location_y - 2
+            self.rect.y = self.location_y - 50
             self.gravity = GRAVITY
 
         
