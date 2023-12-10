@@ -1,12 +1,14 @@
 import pygame
 from constantes import *
 from plataforma import *
+from trap import *
 
 tile_size = 40
 
 class World():
     def __init__(self,platform_to_load):
         self.tile_list = []
+        self.trap_list = []
 
         list = platform_to_load
 
@@ -20,6 +22,10 @@ class World():
                 if tile == 1:
                     block = Platform(col_count * tile_size , row_count * tile_size , tile_size,tile_size)
                     self.tile_list.append(block)
+                elif tile == 2:
+                    block = Trap(col_count * tile_size , row_count * tile_size , tile_size,tile_size)
+                    self.tile_list.append(block)
+                    self.trap_list.append(block)
                 col_count += 1
             row_count += 1
 

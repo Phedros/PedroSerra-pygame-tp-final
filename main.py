@@ -81,7 +81,7 @@ def insert_name():
     while True:
 
         mouse_pos = pygame.mouse.get_pos()
-        print(mouse_pos)
+        #print(mouse_pos)
         pygame.display.set_caption('Ingrese el nombre del jugador')
 
         menu_button_game_over.draw(screen,mouse_pos)
@@ -128,6 +128,7 @@ def gameplay(level,score,name,lives):
     is_pause = False
     ready_to_pass = False
     gold_enter_flag = True
+    
 
     actual_level = level
 
@@ -154,6 +155,7 @@ def gameplay(level,score,name,lives):
         )
     player_1.score = total_score
     player_1.lives = lives
+    player_1.tiempo_transcurrido_pegasus_mode = 0
 
     dict_super_player = World.load_level(actual_level,json_file,'super_player')
     super_player_1 = Player(
@@ -213,7 +215,7 @@ def gameplay(level,score,name,lives):
                         player_1.have_box = False
                         for box in box_list:
                             box_list.remove(box)
-                    if event.key == pygame.K_SPACE and (player_1.is_on_platform or (player_1.double_jump and not player_1.doing_double_jump)):
+                    if event.key == pygame.K_SPACE and not player_1.animation_mode and (player_1.is_on_platform or (player_1.double_jump and not player_1.doing_double_jump)):
                         player_1.jump_control(True,animation_speed=8)
                     if event.key == pygame.K_p:
                         is_pause = True
@@ -230,7 +232,7 @@ def gameplay(level,score,name,lives):
                     #     player_1.walk_control(player_1.direccion,animation_speed=6,is_running=True)
 
                 if event.type == pygame.KEYUP:
-                    if event.key == pygame.K_SPACE:
+                    if event.key == pygame.K_SPACE and not player_1.animation_mode:
                         player_1.jump_control(False,animation_speed=8)
                     # if event.key == pygame.K_LALT:
                     #     player_1.is_running = False
@@ -275,6 +277,12 @@ def gameplay(level,score,name,lives):
 
         for block in world.tile_list:
             block.draw(screen)
+        
+        for trap in world.trap_list:
+            if trap.rect_up_colition.colliderect(player_1.rect_limit_colition) and not player_1.is_hit and not player_1.hit_delay:
+                player_1.hit_animation(delta_ms,True)
+                
+
 
         delta_ms = clock.tick(FPS)  #limitando que vaya a una velocidad determinada
 
@@ -315,11 +323,17 @@ def gameplay(level,score,name,lives):
                     main_game_over(player_name,player_1.score,player_1.lives)
                 main_selec_levels(player_1.score,actual_level, player_name, player_1.lives)
 
+        if player_1.hit_delay:
+            player_1.tiempo_transcurrido_hit_delay += delta_ms
+            if player_1.tiempo_transcurrido_hit_delay > 1000:
+                player_1.hit_delay = False
+                player_1.tiempo_transcurrido_hit_delay = 0
+
         for enemy in enemy_list:
-            if not player_1.animation_mode and not enemy.is_dead:
+            if not player_1.animation_mode and not enemy.is_dead and not player_1.hit_delay:
                 for bullet in enemy.bullet_group.sprites():
-                    if(bullet.rect.colliderect(player_1.rect_limit_colition)) or \
-                        enemy.rect.colliderect(player_1.rect_limit_colition):
+                    if not player_1.is_hit and ((bullet.rect.colliderect(player_1.rect_limit_colition)) or \
+                        enemy.rect.colliderect(player_1.rect_limit_colition)):
 
                         player_1.animation = player_1.hit_animation(delta_ms,True)
                         bullet.kill()
@@ -346,6 +360,7 @@ def gameplay(level,score,name,lives):
                 if player_1.tiempo_transcurrido_pegasus_mode > TIEMPO_PEGASUS_MODE:
                     player_1.countdown_pegasus_mode = True
                     player_1 = super_player_1.super_pegasus(player_1,delta_ms)
+                    player_1.tiempo_transcurrido_pegasus_mode = 0
 
         if len(enemy_list) == 0  and gold_enter_flag:
                 gold_enter_flag = False
@@ -824,7 +839,7 @@ def main_game_over(name,score,lives):
                     clicked = True
                     pause_music.stop()
                     main_menu()
-                if menu_button_game_over.rect.collidepoint(mouse_pos):
+                if quit_button_game_over.rect.collidepoint(mouse_pos):
                     pygame.quit()
                     sys.exit()
             if event.type == pygame.MOUSEBUTTONUP and event.button == 1:

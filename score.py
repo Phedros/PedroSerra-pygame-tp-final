@@ -41,9 +41,10 @@ def read_score():
     list = []
     print('score1')
     with sqlite3.connect("bd_score.db") as conexion:
-        cursor=conexion.execute("SELECT * FROM players ORDER BY score ASC")
+        cursor=conexion.execute("SELECT * FROM players ORDER BY score DESC LIMIT 6")
         for fila in cursor:
             list.append({"name": fila[1], "score": fila[2]})
+        
 
         return list
 
