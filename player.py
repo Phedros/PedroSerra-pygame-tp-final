@@ -56,6 +56,8 @@ class Player:
         self.is_hit = False
         self.animation_flag = False
         self.tiempo_transcurrido_hit = 0
+        self.hit_delay = False
+        self.tiempo_transcurrido_hit_delay = 0
 
         self.is_punching = False
         self.is_dead = False
@@ -242,6 +244,7 @@ class Player:
         screen.blit(self.image,self.rect)
         
     def hit_animation(self,delta_ms,primer_hit):
+        self.hit_delay = True
         self.tiempo_transcurrido_hit += delta_ms
         if (self.animation != self.hit_l and self.animation != self.hit_r):
             if(self.direccion == DIRECCION_R):
@@ -252,10 +255,11 @@ class Player:
             self.animation_speed = 2
             self.is_hit = True
             if primer_hit:
-                self.lives -= 1
-                if self.lives == 0:
-                    self.is_dead = True
-                    self.dead_animation
+                if self.lives > 0:
+                    self.lives -= 1
+                    if self.lives == 0:
+                        self.is_dead = True
+                        self.dead_animation
             
         if self.tiempo_transcurrido_hit > 500:
             self.is_hit = False
@@ -315,6 +319,8 @@ class Player:
         self.doing_double_jump = player.doing_double_jump
         self.countdown_pegasus_mode = player.countdown_pegasus_mode
         self.tiempo_transcurrido_pegasus_mode = player.tiempo_transcurrido_pegasus_mode
+        self.hit_delay = player.hit_delay
+        self.tiempo_transcurrido_hit_delay = player.tiempo_transcurrido_hit_delay
         
         self.location_x = player.location_x
         self.location_y = player.location_y
@@ -396,9 +402,6 @@ class Player:
             self.rect.x = self.location_x
             self.rect.y = self.location_y - 50
             self.gravity = GRAVITY
-
-        
-
 
 
     def recharge(self):
