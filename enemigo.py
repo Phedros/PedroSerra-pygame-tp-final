@@ -57,7 +57,7 @@ class Enemy:
 
         self.bullet_group = pygame.sprite.Group()
 
-        self.rect_down_colition = pygame.Rect(self.rect.x/4, self.rect.y + self.rect.h - ALTURA_RECT_CONTACTO, self.rect.h, ALTURA_RECT_CONTACTO)
+        self.rect_down_colition = pygame.Rect(self.rect.x/4, self.rect.y + self.rect.h - ALTURA_RECT_CONTACTO, self.rect.w, ALTURA_RECT_CONTACTO)
 
     def walk(self,animation_speed):
         self.frame = 0
@@ -88,7 +88,7 @@ class Enemy:
         # print(f'rect x: {self.rect.x}')
         # print(f'move x: {self.move_x}')
 
-        self.rect_down_colition = pygame.Rect(self.rect.x, self.rect.y + self.rect.h - ALTURA_RECT_CONTACTO, self.rect.h, ALTURA_RECT_CONTACTO)
+        self.rect_down_colition = pygame.Rect(self.rect.x, self.rect.y + self.rect.h - ALTURA_RECT_CONTACTO, self.rect.w, ALTURA_RECT_CONTACTO)
 
     def do_animation(self,delta_ms):
 

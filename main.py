@@ -52,6 +52,10 @@ imagen_tuto_2 = pygame.transform.scale(imagen_tuto_2,(ANCHO_VENTANA,ALTO_VENTANA
 imagen_tuto_3 = pygame.image.load(r"images\caracters\extras\tutorial_3.png")
 imagen_tuto_3 = pygame.transform.scale(imagen_tuto_3,(ANCHO_VENTANA,ALTO_VENTANA))
 
+imagen_final = pygame.image.load(r"images\caracters\extras\final_img.jpg")
+imagen_final = pygame.transform.scale(imagen_final,(ANCHO_VENTANA,ALTO_VENTANA))
+
+
 
 # Musica
 intro_music = pg.mixer.Sound("sound\Saint Seiya - Intro.mp3")
@@ -128,12 +132,13 @@ def gameplay(level,score,name,lives):
     is_pause = False
     ready_to_pass = False
     gold_enter_flag = True
+    clock_fix = True
     
 
     actual_level = level
 
     # control tiempo
-    tiempo = 0
+    #tiempo = 0
     tiempo_mil = 0
 
     # Bullet
@@ -156,6 +161,7 @@ def gameplay(level,score,name,lives):
     player_1.score = total_score
     player_1.lives = lives
     player_1.tiempo_transcurrido_pegasus_mode = 0
+    
 
     dict_super_player = World.load_level(actual_level,json_file,'super_player')
     super_player_1 = Player(
@@ -203,6 +209,8 @@ def gameplay(level,score,name,lives):
     platform_list = world.tile_list
 
     while True:
+        # mouse_pos = pygame.mouse.get_pos()
+        # print(mouse_pos)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -282,9 +290,10 @@ def gameplay(level,score,name,lives):
             if trap.rect_up_colition.colliderect(player_1.rect_limit_colition) and not player_1.is_hit and not player_1.hit_delay:
                 player_1.hit_animation(delta_ms,True)
                 
-
-
-        delta_ms = clock.tick(FPS)  #limitando que vaya a una velocidad determinada
+        
+        if not is_pause:
+            delta_ms = clock.tick(FPS)  #limitando que vaya a una velocidad determinada
+        
 
         for box in box_list:
             box.update(platform_list)
@@ -319,8 +328,8 @@ def gameplay(level,score,name,lives):
                 player_1.score += 500
                 gold_list.remove(gold)
                 actual_level += 1
-                if actual_level == 13:
-                    main_game_over(player_name,player_1.score,player_1.lives)
+                if actual_level == 2:
+                    main_finish(player_name,player_1.score,player_1.lives)
                 main_selec_levels(player_1.score,actual_level, player_name, player_1.lives)
 
         if player_1.hit_delay:
@@ -355,12 +364,12 @@ def gameplay(level,score,name,lives):
                     if score:
                         player_1.score += 100
 
-            if (player_1.is_super_pegasus and not player_1.countdown_pegasus_mode):
-                player_1.tiempo_transcurrido_pegasus_mode += delta_ms
-                if player_1.tiempo_transcurrido_pegasus_mode > TIEMPO_PEGASUS_MODE:
-                    player_1.countdown_pegasus_mode = True
-                    player_1 = super_player_1.super_pegasus(player_1,delta_ms)
-                    player_1.tiempo_transcurrido_pegasus_mode = 0
+        if (player_1.is_super_pegasus and not player_1.countdown_pegasus_mode):
+            player_1.tiempo_transcurrido_pegasus_mode += delta_ms
+            if player_1.tiempo_transcurrido_pegasus_mode > TIEMPO_PEGASUS_MODE:
+                player_1.countdown_pegasus_mode = True
+                player_1 = super_player_1.super_pegasus(player_1,delta_ms)
+                player_1.tiempo_transcurrido_pegasus_mode = 0
 
         if len(enemy_list) == 0  and gold_enter_flag:
                 gold_enter_flag = False
@@ -368,8 +377,14 @@ def gameplay(level,score,name,lives):
                 ready_to_pass = True
                 
 
-        
-        time = tiempo.temporizador(int(delta_ms))
+        # print("corriendo el tempo")
+        # print("delta")
+        # print(delta_ms)
+        if clock_fix:
+            clock_fix = False
+            time = 60
+        else:
+            time = tiempo.temporizador(int(delta_ms))
         draw_text(f"Health: {player_1.lives}", font, NEGRO, ANCHO_VENTANA/25,12)
         draw_text(f"Time: {time}", font, NEGRO, ANCHO_VENTANA/2.3,12)
         draw_text(f"Score: {player_1.score}", font, NEGRO, ANCHO_VENTANA/1.2,12)
@@ -593,8 +608,9 @@ def tutorial():
 def main_setting():
     #imagen_setting
     pygame.display.set_caption("Setting")
+    in_setting = True
 
-    while True:
+    while in_setting:
         screen.blit(imagen_setting,imagen_setting.get_rect())
         mouse_pos = pygame.mouse.get_pos()
         clicked = False
@@ -630,7 +646,8 @@ def main_setting():
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and clicked == False:
                 if quit_button_setting.rect.collidepoint(mouse_pos):
                     clicked = True
-                    main_menu()
+                    in_setting = False
+                    #main_menu()
                 elif up_button_setting_music.rect.collidepoint(mouse_pos):
                     clicked = True
                     volumen = pygame.mixer.music.get_volume()
@@ -704,6 +721,7 @@ def main_menu():
         pygame.display.update()
 
 def main_pause(is_pause,time_input):
+
     actual_time = time_input
     pygame.display.set_caption("pause")
     clicked = False
@@ -731,6 +749,7 @@ def main_pause(is_pause,time_input):
                     clicked = True
                     pause_music.stop()
                     is_pause = False
+                    print('salgo######################################')
                     return actual_time
                     #gameplay()
                 if settings_button_pause.rect.collidepoint(mouse_pos):
@@ -745,10 +764,9 @@ def main_pause(is_pause,time_input):
         #pygame.display.update()
 
 def main_score():
+    in_main_score = True
     pygame.display.set_caption("Score")
     clicked = False
-    pg.mixer.music.load("sound\Saint Seiya - Pause.mp3")
-    pg.mixer.music.play(-1)
 
     y = 280
     score_list_txt = []
@@ -774,7 +792,7 @@ def main_score():
     print('score0')
     read_score()
 
-    while True:
+    while in_main_score:
         mouse_pos = pygame.mouse.get_pos()
         
         screen.blit(imagen_fondo_score,imagen_fondo_score.get_rect())
@@ -793,7 +811,7 @@ def main_score():
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and clicked == False:
                 if quit_button_score.rect.collidepoint(mouse_pos):
                     clicked = True
-                    main_setting()
+                    in_main_score = False
             #         main_menu()
             #     if menu_button_game_over.rect.collidepoint(mouse_pos):
             #         pygame.quit()
@@ -847,6 +865,48 @@ def main_game_over(name,score,lives):
         #menu_text =
         pygame.display.flip()
         #pygame.display.update()
+
+def main_finish(name,score,lives):
+    
+    #score_total_lives = lives *1000
+    #total_score = score + score_total_lives
+    pygame.display.set_caption("Finish")
+    clicked = False
+    pg.mixer.music.load("sound\Saint Seiya - Pause.mp3")
+    pg.mixer.music.play(-1)
+
+    update_score(name,score)
+
+    while True:
+
+        mouse_pos = pygame.mouse.get_pos()
+
+        screen.blit(imagen_final,imagen_final.get_rect())
+
+        draw_text(f'Score: {score}',font_game_over,ROJO_SEIYA,150,100)
+
+        menu_button_finish.draw(screen,mouse_pos)
+        quit_button_finish.draw(screen,mouse_pos)
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and clicked == False:
+                if menu_button_finish.rect.collidepoint(mouse_pos):
+                    clicked = True
+                    pause_music.stop()
+                    main_menu()
+                if quit_button_finish.rect.collidepoint(mouse_pos):
+                    pygame.quit()
+                    sys.exit()
+            if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+                clicked = False
+        #menu_text =
+        pygame.display.flip()
+        #pygame.display.update()
+
 
 main_menu()
 

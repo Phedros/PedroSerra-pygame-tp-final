@@ -24,8 +24,8 @@ class Auxiliar:
                 lista.append(surface_fotograma)
         return lista
     
-
     def temporizador(self,tiempo):
+        
         self.time -= tiempo
         format_time = self.time
         format_time = int(format_time/1000)
