@@ -143,6 +143,9 @@ quit_button_pause = Button(Auxiliar.center_image(quit_img)-30,600,quit_img)
     #Game Over
 menu_button_game_over = Button(300,480,menu_img)
 quit_button_game_over = Button(300,600,quit_img)
+    #Finish
+menu_button_finish = Button(50,480,menu_img)
+quit_button_finish = Button(50,600,quit_img)
     #Levels
 level_1_button = Button(860,610,level_1_img)
 level_2_button = Button(1040,510,level_2_img)
